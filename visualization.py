@@ -23,7 +23,7 @@ def plot_class_distribution(y):
 def plot_features_info(series, title):
     plt.figure()
     series.plot.barh()
-    plt.ylabel("MACs")
+    plt.ylabel("")
     plt.title(title)
 
 

@@ -36,3 +36,16 @@ def priori_analysis(X, y):
 
     visualization.plot_class_distribution(y)
     visualization.plot_all()
+
+
+def create_datasets(X):
+    return [X.drop(['location', 'family', 'timestamp', 'device'], axis=1)]
+
+
+def remove_nan(X_train, X_test):
+    imputer = SimpleImputer(strategy="median").fit(X_train)
+    X_train = imputer.transform(X_train)
+    if X_test is not None:
+        X_test = imputer.transform(X_test)
+
+    return X_train, X_test
