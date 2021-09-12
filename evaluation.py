@@ -28,7 +28,7 @@ def partial_results_analysis(models, X_test, y_test, X_cols):
 
 
 # function to show the general results
-def results_analysis(best_models, subsets_sizes):
+def results_analysis(best_models, subsets_sizes, losses):
     pd_models = pd.DataFrame(best_models)
     models_names = pd.unique([name.translate({ord(k): None for k in digits})[:-1] for name in pd_models.columns])
 
@@ -40,6 +40,6 @@ def results_analysis(best_models, subsets_sizes):
     visualization.plot_testing_accuracy(pd_models.transpose()['final_test_score'], models_names, subsets_sizes)
 
     # plot losses if stored
-    # if len(losses.keys()) > 0:
-    #     visualization.plot_losses(losses)
+    if len(losses.keys()) > 0:
+        visualization.plot_losses(losses)
     visualization.plot_all()

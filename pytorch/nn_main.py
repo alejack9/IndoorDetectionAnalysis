@@ -7,7 +7,7 @@ import preprocessing
 from pytorch.model_runner import train_loop, test_loop
 import torch
 from pytorch.model import Feedforward
-from pytorch.dataset import TMDDataset
+from pytorch.dataset import IndoorDataset
 from torch.utils.data import DataLoader, Subset
 import itertools
 import time
@@ -15,13 +15,15 @@ import time
 
 # starting point for neural network training and testing
 def run(X, y, nn_models_dir, use_saved_if_available, save_models):
-    force_train = False
-
     # hyperparameters
-    hidden_sizes = [64, 50, 32, 16]
-    nums_epochs = [500, 400, 250, 100]
-    batch_sizes = [32, 64, 128, 256]
-    gamma = [0.01, 0.03, 0.05, 0.08]
+    # hidden_sizes = [64, 50, 32, 16]
+    hidden_sizes = [64]
+    # nums_epochs = [500, 400, 250, 100]
+    nums_epochs = [100]
+    # batch_sizes = [32, 64, 128, 256]
+    batch_sizes = [32]
+    # gamma = [0.01, 0.03, 0.05, 0.08]
+    gamma = [0.01]
     learning_rate = 0.1
 
     # exploit gpu if possible
@@ -49,7 +51,7 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
     X[test_idx] = scaler.transform(X[test_idx])
 
     # save the dataset as a set of tensors
-    dataset = TMDDataset(X, y)
+    dataset = IndoorDataset(X, y)
 
     train_subset = Subset(dataset, train_idx)
     val_subset = Subset(dataset, val_idx)
@@ -122,18 +124,8 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
         print("Saved model found: NN_{}".format(fs))
         result = pd.read_csv(result_file, index_col=0)
         model = Feedforward(dataset.X.shape[1], result['hidden_size'][0], dataset.num_classes)
-        if force_train:
-            model.to(device)
-            train_loader = DataLoader(train_subset, batch_size=int(result['batch_size'][0]), shuffle=False)
-            criterion = torch.nn.CrossEntropyLoss()
-            optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
-            lambda1 = lambda epoch: 1 / (1 + result['decay'][0] * epoch)
-            scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
-
-            losses = train_loop(train_loader, model, criterion, optimizer, scheduler, result['epochs'][0], device)
-        else:
-            model.load_state_dict(torch.load(model_file), strict=False)
-            model.to(device)
+        model.load_state_dict(torch.load(model_file), strict=False)
+        model.to(device)
 
         best_model = result.transpose().to_dict()
     return best_model, losses

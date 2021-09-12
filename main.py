@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from os import makedirs, path
 
+from sklearn.preprocessing import LabelEncoder
+
 import data_layer
 import model_runner
 import preprocessing
@@ -10,6 +12,7 @@ import evaluation
 
 # for reproducibility
 import visualization
+from pytorch import nn_main
 
 
 def set_deterministic_behavior():
@@ -34,12 +37,17 @@ if __name__ == '__main__':
 
     X, y, num_classes = data_layer.load_data()
 
+    # encoding of target values for the neural network
+    lenc = LabelEncoder()
+    y_encoded = lenc.fit_transform(y)
+
     # preprocessing.priori_analysis(X, y)
 
     # create N different sub-datasets
     X_subsets, subsets_sizes = preprocessing.create_datasets(X)
 
     best_models = {}
+    losses = {}
     # for each sub-dataset
     for fs, X_current in zip(subsets_sizes, X_subsets):
         # 20% for testing
@@ -52,6 +60,12 @@ if __name__ == '__main__':
 
         current_bests = evaluation.add_test_scores(current_bests, X_test, y_test)
         best_models.update(current_bests)
+
+        # retrieve the best neural network
+        best_mlp, loss = nn_main.run(X_current.to_numpy(), y_encoded, models_dir, use_saved_if_available, save_models)
+        if loss is not None:
+            losses[fs] = loss
+        best_models.update(best_mlp)
 
         # plot roc curve and confusion matrix of each best model
         # evaluation.partial_results_analysis(current_bests, X_test, y_test, X_current.columns)
@@ -67,4 +81,4 @@ if __name__ == '__main__':
     # visualization.plot_all()
 
     # display validation and testing complete results
-    evaluation.results_analysis(best_models, subsets_sizes)
+    evaluation.results_analysis(best_models, subsets_sizes, losses)

@@ -52,4 +52,4 @@ def test_loop(dataloader, model, device):
     # the accuracy is the the ratio of correct predictions
     score = torch.sum((predictions.squeeze() == actual_labels).float()) / actual_labels.shape[0]
 
-    return score.numpy()
+    return score.numpy().item()

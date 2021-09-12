@@ -171,3 +171,14 @@ def plot_testing_accuracy(scores_table, models_names, subsets_sizes):
     for p in ax.patches:
         ax.annotate(str(round(p.get_height() * 100 * 100) / 100) + "%", (p.get_x() * 1.005, p.get_height() * 1.005))
     plt.title('Testing accuracies per Dataset')
+
+
+def plot_losses(losses):
+    plt.figure()
+    for fs, loss in losses.items():
+        plt.plot(loss, label='{} features'.format(fs.replace('_', '')))
+    plt.yscale('log')
+    plt.ylabel('Loss value (log scale)')
+    plt.xlabel('Epoch')
+    plt.title("Loss Progression for Dataset")
+    plt.legend()

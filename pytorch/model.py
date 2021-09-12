@@ -12,9 +12,9 @@ class Feedforward(nn.Module):
         # 3 hidden layers, ReLU, and Batch normalization
         self.model = nn.Sequential(
             nn.Linear(self.input_size, self.hidden_size),
-            nn.ReLU(),
-            nn.BatchNorm1d(hidden_size),
-            nn.Linear(self.hidden_size, self.hidden_size),
+            # nn.ReLU(),
+            # nn.BatchNorm1d(hidden_size),
+            # nn.Linear(self.hidden_size, self.hidden_size),
             nn.ReLU(),
             nn.BatchNorm1d(hidden_size),
             nn.Linear(self.hidden_size, self.hidden_size),

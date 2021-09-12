@@ -41,10 +41,10 @@ def priori_analysis(X, y):
 
 
 def create_datasets(X):
-    common = X.drop(['location', 'family', 'timestamp', 'device'], axis=1)
-    X_subsets = [common,
-                 common.drop(['gps.latitude', 'gps.longitude', 'gps.altitude', 'gps.accuracy'], axis=1),
-                 common[['gps.latitude', 'gps.longitude', 'gps.altitude', 'gps.accuracy']]
+    base = X.drop(['location', 'family', 'timestamp', 'device'], axis=1)
+    X_subsets = [base,
+                 # base.drop(['gps.latitude', 'gps.longitude', 'gps.altitude', 'gps.accuracy'], axis=1),
+                 # base[['gps.latitude', 'gps.longitude', 'gps.altitude', 'gps.accuracy']]
                  ]
 
     subsets_sizes = ["_" + str(len(df.columns)) for df in X_subsets]
@@ -53,8 +53,8 @@ def create_datasets(X):
 
 
 def remove_nan(X_train, X_test):
-    X_train = X_train.fillna(-100, inplace=False)
+    X_train = pd.DataFrame(X_train).fillna(-100, inplace=False).to_numpy()
     if X_test is not None:
-        X_test = X_test.fillna(-100, inplace=False)
+        X_test = pd.DataFrame(X_test).fillna(-100, inplace=False).to_numpy()
 
     return X_train, X_test

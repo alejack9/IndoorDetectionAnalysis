@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 
 
 # dataset stored as set of tensors
-class TMDDataset(Dataset):
+class IndoorDataset(Dataset):
     def __init__(self, X, y):
         self.num_classes = len(np.unique(y))
         self.X = torch.FloatTensor(X)
