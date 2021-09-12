@@ -1,4 +1,5 @@
 import numpy as np
+from imblearn.over_sampling import RandomOverSampler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -9,7 +10,7 @@ models = [
         "k-NN",
         KNeighborsClassifier(),
         {
-            'clf__n_neighbors': np.logspace(1, 9, 10, base=2, dtype=np.int)
+            'kneighborsclassifier__n_neighbors': np.logspace(1, 8, 10, base=2, dtype=np.int)
         }
     ),
     (
@@ -20,13 +21,14 @@ models = [
     ),
     (
         'RandomForest',
-        RandomForestClassifier(random_state=42, n_jobs=8),
+        RandomForestClassifier(random_state=42, n_jobs=4),
         {
-            # 'clf__criterion': ['gini', 'entropy'] # since gini works well, we don't need to check entropy
-            'clf__n_estimators': [10, 20, 50, 100, 200, 300]
+            # 'clf__criterion': ['gini', 'entropy'],  # since gini works well, we don't need to check entropy
+            'randomforestclassifier__n_estimators': [200, 300, 400, 500, 600, 700, 800, 1000]
         }
     )
 ]
 
 for _, _, params in models:
-    params['scaler'] = [StandardScaler(), MinMaxScaler()]
+    params['randomoversampler'] = [None, RandomOverSampler(random_state=42, sampling_strategy='minority')]
+    params['standardscaler'] = [StandardScaler(), MinMaxScaler()]

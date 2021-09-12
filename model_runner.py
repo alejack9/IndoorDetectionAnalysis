@@ -1,7 +1,10 @@
+from joblib import dump, load
 import pandas as pd
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.pipeline import make_pipeline
 from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+from os import path
 
 from models_config import models
 
@@ -11,27 +14,38 @@ def get_rank1_info(result, attribute):
     return result.loc[result['rank_test_score'] == 1][attribute].values[0]
 
 
-def retrieve_best_models(X_train, y_train):
+def retrieve_best_models(X_train, y_train, fs, use_saved_if_available, save_models, models_dir):
     best_models = {}
     for est_name, est, params in models:
-        # cross-validate: since cv=10, the validation set is 10% of the whole train dataset
-        result, current_pipeline = run_crossvalidation(X_train, y_train, est, params, cv=10)
-        best_models[est_name] = {'pipeline': current_pipeline}
+        est_name = est_name + fs
+        filename = est_name + '.joblib'
+
+        if use_saved_if_available and path.exists(path.join(models_dir, filename)):
+            # load the model
+            print("Saved model found: {}".format(est_name))
+            best_models[est_name] = {'pipeline': load(path.join(models_dir, filename))}
+            result = pd.read_csv(path.join(models_dir, "csvs", est_name + ".csv"))
+        else:
+            # cross-validate: since cv=10, the validation set is 10% of the whole train dataset
+            result, current_pipeline = run_crossvalidation(X_train, y_train, est, params, cv=10)
+            best_models[est_name] = {'pipeline': current_pipeline}
+            if save_models:
+                # save the model and the associated info
+                dump(best_models[est_name]['pipeline'], path.join(models_dir, filename))
+                result.to_csv(path.join(models_dir, "csvs", est_name + ".csv"))
 
         # retrieve metadata of the best model
         attributes = ["mean_train_score", "mean_test_score", "mean_fit_time", "mean_score_time"]
         for attribute in attributes:
             best_models[est_name][attribute] = get_rank1_info(result, attribute)
-
+        best_models[est_name]['_all_results'] = result
     return best_models
 
 
 # cross-validation function
 def run_crossvalidation(X_trainval, y_trainval, clf, params, cv=10, verbose=True):
-    # params["scaler"] = [StandardScaler(), MinMaxScaler()]
-
     # "StandardScaler()" is a placeholder that will be change by "GridSearchCV" when "params" will be passed
-    pipeline = Pipeline([('scaler', StandardScaler()), ('clf', clf)])
+    pipeline = make_pipeline(RandomOverSampler(random_state=42, sampling_strategy='minority'), StandardScaler(), clf)
 
     grid_search = GridSearchCV(pipeline, params, cv=cv, verbose=10 if verbose else 0, n_jobs=8,
                                return_train_score=True)
