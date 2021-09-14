@@ -12,14 +12,15 @@ import evaluation
 
 # for reproducibility
 import visualization
+import torch
 from pytorch import nn_main
 
 
 def set_deterministic_behavior():
-    # torch.manual_seed(0)
-    # torch.cuda.manual_seed_all(0)
-    # torch.backends.cudnn.benchmark = False
-    # torch.backends.cudnn.deterministic = True
+    torch.manual_seed(0)
+    torch.cuda.manual_seed_all(0)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
     np.random.seed(0)
 
 
