@@ -19,11 +19,11 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
     # hidden_sizes = [64, 50, 32, 16]
     hidden_sizes = [64]
     # nums_epochs = [500, 400, 250, 100]
-    nums_epochs = [100]
+    nums_epochs = [1300]
     # batch_sizes = [32, 64, 128, 256]
-    batch_sizes = [32]
+    batch_sizes = [128]
     # gamma = [0.01, 0.03, 0.05, 0.08]
-    gamma = [0.01]
+    gamma = [0.03]
     learning_rate = 0.1
 
     # exploit gpu if possible
@@ -111,7 +111,8 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
                                                 "mean_test_score": val_score,
                                                 "mean_fit_time": time_after_train,
                                                 "mean_score_time": time_after_val,
-                                                "final_test_score": test_score}}
+                                                "final_test_score": test_score,
+                                                "losses": losses}}
                 best_val_score = val_score
                 best_nn = model
 
@@ -126,6 +127,7 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
         model = Feedforward(dataset.X.shape[1], result['hidden_size'][0], dataset.num_classes)
         model.load_state_dict(torch.load(model_file), strict=False)
         model.to(device)
-
         best_model = result.transpose().to_dict()
+        losses = np.array(best_model["NN_" + str(fs)]["losses"][1: -1].split(",")).astype(np.float)
+
     return best_model, losses
