@@ -16,14 +16,13 @@ import time
 # starting point for neural network training and testing
 def run(X, y, nn_models_dir, use_saved_if_available, save_models):
     # hyperparameters
-    # hidden_sizes = [64, 50, 32, 16]
-    hidden_sizes = [64]
-    # nums_epochs = [500, 400, 250, 100]
-    nums_epochs = [1300]
-    # batch_sizes = [32, 64, 128, 256]
-    batch_sizes = [128]
-    # gamma = [0.01, 0.03, 0.05, 0.08]
-    gamma = [0.03]
+
+    hidden_sizes = np.concatenate([[128, 64, 32, 8],
+                                   [256, 100, 50, 16]])
+    nums_epochs = [1300, 1000, 500, 400, 250, 100]
+    batch_sizes = [16, 32, 64, 128, 256]
+    gamma = [0.01, 0.03, 0.05, 0.08, 0.1]
+    optimizerBuilders = [torch.optim.Adam, torch.optim.SGD]
     learning_rate = 0.1
 
     # exploit gpu if possible
@@ -35,7 +34,7 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
     result_file = path.join(nn_models_dir, 'csvs', 'NN_{}.csv'.format(fs))
 
     # Cartesian product of the sets of hyperparameters
-    hyperparams = itertools.product(hidden_sizes, nums_epochs, batch_sizes, gamma)
+    hyperparams = itertools.product(hidden_sizes, nums_epochs, batch_sizes, gamma, optimizerBuilders)
 
     # split the indices (72% train, 8% val, 20% test)
     train_idx, test_idx = train_test_split(np.arange(len(y)), test_size=0.2, stratify=y, random_state=42)
@@ -61,13 +60,15 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
     losses = None
     if not use_saved_if_available or not path.exists(model_file):
         # validation of hyperparameters
-        for hidden_size, num_epochs, batch_size, gamma in hyperparams:
+        for hidden_size, num_epochs, batch_size, gamma, optimizerBuilder in hyperparams:
             print('---------------------------------------------------------------')
-            print('Dataset size: {}, hidden_size: {}, num_epochs: {}, batch_size: {}, gamma: {}'.format(fs,
-                                                                                                        hidden_size,
-                                                                                                        num_epochs,
-                                                                                                        batch_size,
-                                                                                                        gamma))
+            print(
+                'Dataset size: {}, hidden_size: {}, num_epochs: {}, batch_size: {}, gamma: {}, optimizer: {}'.format(fs,
+                                                                                                                     hidden_size,
+                                                                                                                     num_epochs,
+                                                                                                                     batch_size,
+                                                                                                                     gamma,
+                                                                                                                     optimizerBuilder))
 
             # create dataloaders of each set to iterate more easily
             train_loader = DataLoader(train_subset, batch_size=batch_size, shuffle=False)
@@ -78,7 +79,11 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
             model = Feedforward(dataset.X.shape[1], hidden_size, dataset.num_classes)
             model.to(device)
             criterion = torch.nn.CrossEntropyLoss()
-            optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)  # stochastic gradient descent
+
+            # adamOptimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+            optimizer = optimizerBuilder(model.parameters(), lr=learning_rate)  # stochastic gradient descent
+
             # scheduler fo learning rate decay
             lambda1 = lambda epoch: 1 / (1 + gamma * epoch)
             scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
