@@ -43,8 +43,8 @@ def priori_analysis(X, y):
 def create_datasets(X):
     base = X.drop(['location', 'family', 'timestamp', 'device'], axis=1)
     X_subsets = [base,
-                 # base.drop(['gps.latitude', 'gps.longitude', 'gps.altitude', 'gps.accuracy'], axis=1),
-                 # base[['gps.latitude', 'gps.longitude', 'gps.altitude', 'gps.accuracy']]
+                 base.drop(['gps.latitude', 'gps.longitude', 'gps.altitude', 'gps.accuracy'], axis=1),
+                 base[['gps.latitude', 'gps.longitude', 'gps.altitude', 'gps.accuracy']]
                  ]
 
     subsets_sizes = ["_" + str(len(df.columns)) for df in X_subsets]
