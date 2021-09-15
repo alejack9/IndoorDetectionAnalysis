@@ -8,7 +8,7 @@ for file in os.listdir('./jsons'):
     with open('./jsons/' + file) as f:
         d = json.load(f)
 
-    print('./jsons/' + file)
+    # print('./jsons/' + file)
     data = pd.concat([data, pd.DataFrame(json_normalize(d))])
 data.to_csv('signalfingerprints.csv')
-print(len(data.columns))
+print("Columns number: {}".format(len(data.columns)))
