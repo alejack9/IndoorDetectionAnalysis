@@ -9,7 +9,7 @@ from sklearn.metrics import roc_curve, auc, plot_confusion_matrix
 from sklearn.preprocessing import label_binarize
 
 
-def plot_class_distribution(y):
+def plot_class_distribution(y, sub=''):
     distribution = np.unique(y, return_counts=True)
     fig, axs = plt.subplots(nrows=1, ncols=2)
     step = 1.0 / len(distribution[0])
@@ -17,7 +17,7 @@ def plot_class_distribution(y):
     axs[0].bar(x=distribution[0], height=distribution[1], color=colors)
     axs[0].set_xticklabels(distribution[0], rotation=45)
     axs[1].pie(distribution[1], labels=distribution[0], autopct='%.2f%%', colors=colors)
-    fig.suptitle("Number of samples for each class")
+    fig.suptitle("Number of samples for each class {}".format("- " + sub if sub != "" else ""))
 
 
 # function to plot info associated to the sensors

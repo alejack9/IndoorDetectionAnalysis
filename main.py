@@ -82,4 +82,4 @@ if __name__ == '__main__':
     # visualization.plot_all()
 
     # display validation and testing complete results
-    # evaluation.results_analysis(best_models, subsets_sizes, losses)
+    evaluation.results_analysis(best_models, subsets_sizes, losses)
