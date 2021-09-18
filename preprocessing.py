@@ -34,8 +34,11 @@ def priori_analysis(X, y):
                               list(families.groups.keys())[i].capitalize() + ' - BLUETOOTH')
         features_distribution(d.drop(['family', 'device', 'timestamp', 'location'], axis=1), 'gps.',
                               list(families.groups.keys())[i].capitalize() + ' - GPS')
+
         visualization.plot_all()
 
+    [visualization.plot_class_distribution(y.loc[y.str.contains(family_name)], family_name.capitalize()) for family_name
+     in families.groups.keys()]
     visualization.plot_class_distribution(y)
     visualization.plot_all()
 
