@@ -16,8 +16,7 @@ import time
 # starting point for neural network training and testing
 def run(X, y, nn_models_dir, use_saved_if_available, save_models):
     # hyperparameters
-
-    hidden_sizes = [16, 32, 64, 128, 256]
+    hidden_sizes = np.concatenate([[16, 32, 64, 128, 256], [256, 100, 50, 16]])
     nums_epochs = [1000, 500]
     batch_sizes = [16, 32, 64, 128, 256]
     gamma = [0.02, 0.05, 0.08, 0.1]
@@ -78,8 +77,6 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
             model = Feedforward(dataset.X.shape[1], hidden_size, dataset.num_classes)
             model.to(device)
             criterion = torch.nn.CrossEntropyLoss()
-
-            # adamOptimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
             optimizer = optimizerBuilder(model.parameters(), lr=learning_rate)  # stochastic gradient descent
 
