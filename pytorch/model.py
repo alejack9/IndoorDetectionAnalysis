@@ -9,20 +9,20 @@ class Feedforward(nn.Module):
         self.hidden_size = hidden_size
         self.num_classes = num_classes
 
-        # 3 hidden layers, ReLU, and Batch normalization
+         # ~~3~~ 2 hidden layers, ReLU, and ~~Batch normalization~~ Dropout
         self.model = nn.Sequential(
             nn.Linear(self.input_size, self.hidden_size),
             nn.ReLU(),
             nn.Dropout(),
-            nn.BatchNorm1d(hidden_size),
+            # nn.BatchNorm1d(hidden_size),
+            # nn.Linear(self.hidden_size, self.hidden_size),
+            # nn.ReLU(),
+            # nn.Dropout(),
+            # nn.BatchNorm1d(hidden_size),
             nn.Linear(self.hidden_size, self.hidden_size),
             nn.ReLU(),
             nn.Dropout(),
-            nn.BatchNorm1d(hidden_size),
-            nn.Linear(self.hidden_size, self.hidden_size),
-            nn.ReLU(),
-            nn.Dropout(),
-            nn.BatchNorm1d(hidden_size),
+            # nn.BatchNorm1d(hidden_size),
             nn.Linear(self.hidden_size, num_classes)
         )
 
