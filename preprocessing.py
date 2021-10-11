@@ -1,11 +1,11 @@
 import visualization
 import pandas as pd
 
-
+# return columns which start by prefix specified in parameter
 def get_dataset_prefix(X, prefix):
     return X[[col for col in X if col.startswith(prefix)]]
 
-
+# 
 def missing_values(X, prefix, sensor):
     X_pref = get_dataset_prefix(X, prefix)
     # plot the percentage of missing values for each feature
