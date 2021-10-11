@@ -14,15 +14,9 @@ class Feedforward(nn.Module):
             nn.Linear(self.input_size, self.hidden_size),
             nn.ReLU(),
             nn.Dropout(p=0.2),
-            # nn.BatchNorm1d(hidden_size),
-            # nn.Linear(self.hidden_size, self.hidden_size),
-            # nn.ReLU(),
-            # nn.Dropout(),
-            # nn.BatchNorm1d(hidden_size),
             nn.Linear(self.hidden_size, self.hidden_size),
             nn.ReLU(),
             nn.Dropout(p=0.2),
-            # nn.BatchNorm1d(hidden_size),
             nn.Linear(self.hidden_size, num_classes)
         )
 

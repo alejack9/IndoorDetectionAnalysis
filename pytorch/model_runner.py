@@ -8,7 +8,7 @@ def train_loop(dataloader, model, loss_fn, optimizer, scheduler, num_epochs, dev
     losses = []
     # loop through the entire dataset for num_epochs times
     for epoch in range(num_epochs):
-        print("Epoch: {}/{}".format(epoch, num_epochs))
+        print(f"Epoch: {epoch}/{num_epochs}")
         # for each mini-batch
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
@@ -25,7 +25,7 @@ def train_loop(dataloader, model, loss_fn, optimizer, scheduler, num_epochs, dev
         # decrease the learning rate after each epoch
         scheduler.step()
         losses.append(loss.item())
-        print("loss: {}".format(loss))
+        print(f"loss: {loss}")
     print('Done')
     print('----------------------------------')
     return losses
@@ -50,6 +50,7 @@ def test_loop(dataloader, model, device):
     # keep the class with the maximum value
     predictions = predictions.argmax(dim=1, keepdim=True).cpu()
     # the accuracy is the the ratio of correct predictions
-    score = torch.sum((predictions.squeeze() == actual_labels).float()) / actual_labels.shape[0]
+    score = torch.sum(
+        (predictions.squeeze() == actual_labels).float()) / actual_labels.shape[0]
 
     return score.numpy().item()

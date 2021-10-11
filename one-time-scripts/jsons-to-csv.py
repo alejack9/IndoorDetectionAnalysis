@@ -11,4 +11,4 @@ for file in os.listdir('./jsons'):
     # print('./jsons/' + file)
     data = pd.concat([data, pd.DataFrame(json_normalize(d))])
 data.to_csv('signalfingerprints.csv')
-print("Columns number: {}".format(len(data.columns)))
+print(f"Columns number: {len(data.columns)}")

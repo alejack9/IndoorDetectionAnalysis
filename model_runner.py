@@ -22,7 +22,7 @@ def retrieve_best_models(X_train, y_train, fs, use_saved_if_available, save_mode
 
         if use_saved_if_available and path.exists(path.join(models_dir, filename)):
             # load the model
-            print("Saved model found: {}".format(est_name))
+            print(f"Saved model found: {est_name}")
             best_models[est_name] = {'pipeline': load(path.join(models_dir, filename))}
             result = pd.read_csv(path.join(models_dir, "csvs", est_name + ".csv"))
         else:
@@ -44,8 +44,12 @@ def retrieve_best_models(X_train, y_train, fs, use_saved_if_available, save_mode
 
 # cross-validation function
 def run_crossvalidation(X_trainval, y_trainval, clf, params, cv=10, verbose=True):
-    # "StandardScaler()" and "RandomOverSampler" are placeholders that will be change by "GridSearchCV" when "params" will be passed
-    pipeline = make_pipeline(RandomOverSampler(random_state=42, sampling_strategy='minority'), StandardScaler(), clf)
+    # "StandardScaler()" and "RandomOverSampler" are placeholders that will be change by "GridSearchCV" when
+    # "params" will be passed
+    pipeline = make_pipeline(
+        RandomOverSampler(random_state=42, sampling_strategy='minority'),
+        StandardScaler(),
+        clf)
 
     grid_search = GridSearchCV(pipeline, params, cv=cv, verbose=10 if verbose else 0, n_jobs=-1,
                                return_train_score=True)

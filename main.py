@@ -15,7 +15,7 @@ import torch
 from pytorch import nn_main
 
 
-def set_deterministic_behavior():
+def set_deterministic_behaviour():
     torch.manual_seed(0)
     torch.cuda.manual_seed_all(0)
     torch.backends.cudnn.benchmark = False
@@ -25,13 +25,13 @@ def set_deterministic_behavior():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    set_deterministic_behavior()
+    set_deterministic_behaviour()
 
     use_saved_if_available, save_models = True, True
     models_dir = 'saved_models'
 
     if not path.exists(models_dir):
-        print("WARNING: Making not existing folder: {}".format(models_dir))
+        print(f"WARNING: Making not existing folder: {models_dir}")
         makedirs(models_dir)
         makedirs(path.join(models_dir, "csvs"))
 
@@ -55,8 +55,8 @@ if __name__ == '__main__':
             X_current, y, test_size=0.20, random_state=42, stratify=y)
         # replace missing values
         X_train, X_test = preprocessing.remove_nan(X_train, X_test)
-        current_bests = model_runner.retrieve_best_models(X_train, y_train, fs, use_saved_if_available, save_models,
-                                                          models_dir)
+        current_bests = model_runner.retrieve_best_models(
+            X_train, y_train, fs, use_saved_if_available, save_models, models_dir)
         best_models.update(current_bests)
 
         current_bests = evaluation.add_test_scores(

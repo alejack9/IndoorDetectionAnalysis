@@ -27,20 +27,24 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
 
     # exploit gpu if possible
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # print('Device: {}'.format(device))
+    # print(f'Device: {device}')
     fs = X.shape[1]
 
-    model_file = path.join(nn_models_dir, 'NN_{}.torch'.format(fs))
-    result_file = path.join(nn_models_dir, 'csvs', 'NN_{}.csv'.format(fs))
+    model_file = path.join(nn_models_dir, f'NN_{fs}.torch')
+    result_file = path.join(nn_models_dir, 'csvs', f'NN_{fs}.csv')
 
     # Cartesian product of the sets of hyperparameters
-    hyperparams = itertools.product(hidden_sizes, nums_epochs, batch_sizes, gamma, optimizerBuilders)
+    hyperparams = itertools.product(
+        hidden_sizes, nums_epochs, batch_sizes, gamma, optimizerBuilders)
 
     # split the indices (72% train, 8% val, 20% test)
-    train_idx, test_idx = train_test_split(np.arange(len(y)), test_size=0.2, stratify=y, random_state=42)
+    train_idx, test_idx = train_test_split(
+        np.arange(len(y)), test_size=0.2, stratify=y, random_state=42)
     # remove missing values
-    X[train_idx], X[test_idx] = preprocessing.remove_nan(X[train_idx], X[test_idx])
-    train_idx, val_idx = train_test_split(train_idx, test_size=0.1, stratify=y[train_idx], random_state=42)
+    X[train_idx], X[test_idx] = preprocessing.remove_nan(
+        X[train_idx], X[test_idx])
+    train_idx, val_idx = train_test_split(
+        train_idx, test_size=0.1, stratify=y[train_idx], random_state=42)
 
     # Min-Max Scaling
     scaler = MinMaxScaler()
@@ -63,45 +67,46 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
         for hidden_size, num_epochs, batch_size, gamma, optimizerBuilder in hyperparams:
             print('---------------------------------------------------------------')
             print(
-                'Dataset size: {}, hidden_size: {}, num_epochs: {}, batch_size: {}, gamma: {}, optimizer: {}'.format(fs,
-                                                                                                                     hidden_size,
-                                                                                                                     num_epochs,
-                                                                                                                     batch_size,
-                                                                                                                     gamma,
-                                                                                                                     optimizerBuilder))
+                f'Dataset size: {fs}, hidden_size: {hidden_size}, num_epochs: {num_epochs}, batch_size: {batch_size}, gamma: {gamma}, optimizer: {optimizerBuilder}')
 
             # create dataloaders of each set to iterate more easily
-            train_loader = DataLoader(train_subset, batch_size=batch_size, shuffle=False)
+            train_loader = DataLoader(
+                train_subset, batch_size=batch_size, shuffle=False)
             val_loader = DataLoader(val_subset, batch_size=1, shuffle=False)
             test_loader = DataLoader(test_subset, batch_size=1, shuffle=False)
 
             # create the neural network
-            model = Feedforward(dataset.X.shape[1], hidden_size, dataset.num_classes)
+            model = Feedforward(
+                dataset.X.shape[1], hidden_size, dataset.num_classes)
             model.to(device)
             criterion = torch.nn.CrossEntropyLoss()
 
-            optimizer = optimizerBuilder(model.parameters(), lr=learning_rate)  # stochastic gradient descent
+            # stochastic gradient descent
+            optimizer = optimizerBuilder(model.parameters(), lr=learning_rate)
 
             # scheduler fo learning rate decay
-            lambda1 = lambda epoch: 1 / (1 + gamma * epoch)
-            scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
+            def lambda1(epoch): return 1 / (1 + gamma * epoch)
+            scheduler = torch.optim.lr_scheduler.LambdaLR(
+                optimizer, lr_lambda=lambda1)
 
             # train the neural network
             time_before = time.time()
-            losses = train_loop(train_loader, model, criterion, optimizer, scheduler, num_epochs, device)
+            losses = train_loop(train_loader, model, criterion,
+                                optimizer, scheduler, num_epochs, device)
             time_after_train = time.time() - time_before
 
             # evaluate the neural network on validation and test set
-            train_score = test_loop(DataLoader(train_subset, batch_size=1, shuffle=False), model, device)
+            train_score = test_loop(DataLoader(
+                train_subset, batch_size=1, shuffle=False), model, device)
             time_before = time.time()
             val_score = test_loop(val_loader, model, device)
             time_after_val = time.time() - time_before
             test_score = test_loop(test_loader, model, device)
 
-            print('Dataset size: {}, hidden_size: {}, num_epochs: {}, batch_size: {}, gamma: {}'.format(
-                fs, hidden_size, num_epochs, batch_size, gamma))
-            print("Train accuracy: {}".format(train_score))
-            print("Validation accuracy: {}".format(val_score))
+            print(
+                f'Dataset size: {fs}, hidden_size: {hidden_size}, num_epochs: {num_epochs}, batch_size: {batch_size}, gamma: {gamma}')
+            print(f"Train accuracy: {train_score}")
+            print(f"Validation accuracy: {val_score}")
 
             # save the neural network if it has the best validation score until now
             if val_score > best_val_score:
@@ -125,12 +130,14 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
             torch.save(best_nn.state_dict(), model_file)
     else:
         # load the best neural network
-        print("Saved model found: NN_{}".format(fs))
+        print(f"Saved model found: NN_{fs}")
         result = pd.read_csv(result_file, index_col=0)
-        model = Feedforward(dataset.X.shape[1], result['hidden_size'][0], dataset.num_classes)
+        model = Feedforward(
+            dataset.X.shape[1], result['hidden_size'][0], dataset.num_classes)
         model.load_state_dict(torch.load(model_file), strict=False)
         model.to(device)
         best_model = result.transpose().to_dict()
-        losses = np.array(best_model["NN_" + str(fs)]["losses"][1: -1].split(",")).astype(np.float)
+        losses = np.array(best_model["NN_" + str(fs)]
+                          ["losses"][1: -1].split(",")).astype(np.float)
 
     return best_model, losses

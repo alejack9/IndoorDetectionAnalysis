@@ -19,7 +19,7 @@ def partial_results_analysis(models, X_test, y_test, X_cols):
     rf = models["RandomForest_" + str(len(X_cols))]["pipeline"].named_steps.randomforestclassifier
     rank_var = pd.Series(rf.feature_importances_ * 100, index=X_cols).sort_values(ascending=False)
     visualization.plot_importance(rank_var, xlabel='Importance Score (%)',
-                                  title="Features Importance (Features Count: {})".format(len(X_cols)))
+                                  title=f"Features Importance (Features Count: {len(X_cols)})")
     visualization.plot_all()
 
 

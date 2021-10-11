@@ -1,11 +1,13 @@
 import visualization
 import pandas as pd
 
+
 # return columns which start by prefix specified in parameter
 def get_dataset_prefix(X, prefix):
     return X[[col for col in X if col.startswith(prefix)]]
 
-# 
+
+#
 def missing_values(X, prefix, sensor):
     X_pref = get_dataset_prefix(X, prefix)
     # plot the percentage of missing values for each feature
@@ -37,8 +39,8 @@ def priori_analysis(X, y):
 
         visualization.plot_all()
 
-    [visualization.plot_class_distribution(y.loc[y.str.contains(family_name)], family_name.capitalize()) for family_name
-     in families.groups.keys()]
+    [visualization.plot_class_distribution(y.loc[y.str.contains(family_name)],
+                                           family_name.capitalize()) for family_name in families.groups.keys()]
     visualization.plot_class_distribution(y)
     visualization.plot_all()
 
