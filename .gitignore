@@ -317,3 +317,5 @@ Thumbs.db
 
 dataset/
 one-time-scripts/jsons
+figs
+saved_models/old

@@ -13,7 +13,7 @@ class Feedforward(nn.Module):
         self.model = nn.Sequential(
             nn.Linear(self.input_size, self.hidden_size),
             nn.ReLU(),
-            nn.Dropout(),
+            nn.Dropout(p=0.2),
             # nn.BatchNorm1d(hidden_size),
             # nn.Linear(self.hidden_size, self.hidden_size),
             # nn.ReLU(),
@@ -21,7 +21,7 @@ class Feedforward(nn.Module):
             # nn.BatchNorm1d(hidden_size),
             nn.Linear(self.hidden_size, self.hidden_size),
             nn.ReLU(),
-            nn.Dropout(),
+            nn.Dropout(p=0.2),
             # nn.BatchNorm1d(hidden_size),
             nn.Linear(self.hidden_size, num_classes)
         )
