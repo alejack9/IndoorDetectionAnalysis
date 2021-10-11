@@ -47,7 +47,7 @@ def run_crossvalidation(X_trainval, y_trainval, clf, params, cv=10, verbose=True
     # "StandardScaler()" and "RandomOverSampler" are placeholders that will be change by "GridSearchCV" when "params" will be passed
     pipeline = make_pipeline(RandomOverSampler(random_state=42, sampling_strategy='minority'), StandardScaler(), clf)
 
-    grid_search = GridSearchCV(pipeline, params, cv=cv, verbose=10 if verbose else 0, n_jobs=8,
+    grid_search = GridSearchCV(pipeline, params, cv=cv, verbose=10 if verbose else 0, n_jobs=-1,
                                return_train_score=True)
     grid_search.fit(X_trainval, y_trainval)
 
