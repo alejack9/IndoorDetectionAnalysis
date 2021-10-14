@@ -13,6 +13,7 @@ def add_test_scores(current_bests, X_test, y_test):
 
 # function called for each dataset
 def partial_results_analysis(models, X_test, y_test, X_cols):
+    # plot confusion matrices of each model
     visualization.plot_confusion_matrices(models, X_test, y_test, n_cols=2)
 
     # display the importance of each feature based on Random Forest model
