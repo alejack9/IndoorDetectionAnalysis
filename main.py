@@ -23,7 +23,7 @@ def set_deterministic_behaviour():
     np.random.seed(0)
 
 
-# Press the green button in the gutter to run the script.
+# entrypoint
 if __name__ == '__main__':
     set_deterministic_behaviour()
 
@@ -37,9 +37,8 @@ if __name__ == '__main__':
 
     X, y, num_classes = data_layer.load_data()
 
-    # encoding of target values for the neural network
-    lenc = LabelEncoder()
-    y_encoded = lenc.fit_transform(y)
+    # encode target values: from strings to indexes (for the neural network)
+    y_encoded = LabelEncoder().fit_transform(y)
 
     preprocessing.priori_analysis(X, y)
 
@@ -63,14 +62,14 @@ if __name__ == '__main__':
             current_bests, X_test, y_test)
         best_models.update(current_bests)
 
-        # retrieve the best neural network
+        # retrieve best neural network
         best_mlp, loss = nn_main.run(X_current.to_numpy(
         ), y_encoded, models_dir, use_saved_if_available, save_models)
         if loss is not None:
             losses[fs] = loss
         best_models.update(best_mlp)
 
-        # plot roc curve and confusion matrix of each best model
+        # plot confusion matrix of each best model
         evaluation.partial_results_analysis(
             current_bests, X_test, y_test, X_current.columns)
 
@@ -87,5 +86,5 @@ if __name__ == '__main__':
                     feature_score_correlation, k)
     visualization.plot_all()
 
-    # display validation and testing complete results
+    # display validation and test results and loss curve
     evaluation.results_analysis(best_models, subsets_sizes, losses)

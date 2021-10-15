@@ -2,10 +2,8 @@ import pandas as pd
 import numpy as np
 
 
-# function to load the dataset
-# establish the target from 'family' and 'location' columns
-
 def load_data():
+    '''Loads the dataset. Establishes the target from 'family' and 'location' columns'''
     # not using "index_col='_id.$oid'" because it makes the dataframe messier
     data = pd.read_csv('dataset/signalfingerprints.csv')
     data['target'] = data['family'] + '.' + data['location']

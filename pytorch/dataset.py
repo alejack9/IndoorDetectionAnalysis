@@ -10,10 +10,10 @@ class IndoorDataset(Dataset):
         self.X = torch.FloatTensor(X)
         self.y = torch.LongTensor(y)
 
-    # number of rows
     def __len__(self):
+        '''Number of rows'''
         return self.X.shape[0]
 
-    # function to iterate on observations
     def __getitem__(self, idx):
+        '''Iterates on observations'''
         return self.X[idx, :], self.y[idx]

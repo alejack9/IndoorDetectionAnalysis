@@ -7,28 +7,25 @@ from sklearn.tree import DecisionTreeClassifier
 
 models = [
     (
-        # k-NN for classification problems
         "k-NN",
         KNeighborsClassifier(),
         {
-            # k-NN models with different number of neighbors
+            # number of neighbors' hyperparameter
             'kneighborsclassifier__n_neighbors': np.concatenate([[3, 6, 16, 36, 84], [2, 4, 10, 24, 55, 128]])
             # np.logspace(1, 7, 11, base=2, dtype=np.int)
         }
     ),
     (
-        # classification tree model 
         'DecisionTree',
         DecisionTreeClassifier(random_state=42),
         {
         }
     ),
     (
-        # classification random forest model
         'RandomForest',
         RandomForestClassifier(random_state=42, n_jobs=4),
         {
-            # different values for estimators' iperparameter
+            # number of estimators' hyperparameter
             # 'clf__criterion': ['gini', 'entropy'],  # since gini works well, we don't need to check entropy
             'randomforestclassifier__n_estimators': np.concatenate([[599, 664, 734, 813, 899], [10, 26, 70, 188,
                                                                                                 499]])

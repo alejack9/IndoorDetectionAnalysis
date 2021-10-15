@@ -1,8 +1,8 @@
 import torch
 
 
-# function to train the neural network (SGD)
 def train_loop(dataloader, model, loss_fn, optimizer, scheduler, num_epochs, device):
+    '''Trains the neural network'''
     print('----------------------------------')
     model.train()
     losses = []
@@ -14,7 +14,7 @@ def train_loop(dataloader, model, loss_fn, optimizer, scheduler, num_epochs, dev
             X, y = X.to(device), y.to(device)
             optimizer.zero_grad()
 
-            # Compute prediction and loss
+            # compute prediction and loss
             pred = model(X)
             loss = loss_fn(pred, y)
 
@@ -31,8 +31,8 @@ def train_loop(dataloader, model, loss_fn, optimizer, scheduler, num_epochs, dev
     return losses
 
 
-# function to test the neural network
 def test_loop(dataloader, model, device):
+    '''Tests the neural network'''
     model.eval()
     predictions = []
     actual_labels = []

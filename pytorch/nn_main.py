@@ -33,7 +33,7 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
     model_file = path.join(nn_models_dir, f'NN_{fs}.torch')
     result_file = path.join(nn_models_dir, 'csvs', f'NN_{fs}.csv')
 
-    # Cartesian product of the sets of hyperparameters
+    # cartesian product of the hyperparameters' sets
     hyperparams = itertools.product(
         hidden_sizes, nums_epochs, batch_sizes, gamma, optimizerBuilders)
 
@@ -69,7 +69,7 @@ def run(X, y, nn_models_dir, use_saved_if_available, save_models):
             print(
                 f'Dataset size: {fs}, hidden_size: {hidden_size}, num_epochs: {num_epochs}, batch_size: {batch_size}, gamma: {gamma}, optimizer: {optimizerBuilder}')
 
-            # create dataloaders of each set to iterate more easily
+            # create dataloaders to be passed to train_loop
             train_loader = DataLoader(
                 train_subset, batch_size=batch_size, shuffle=False)
             val_loader = DataLoader(val_subset, batch_size=1, shuffle=False)
